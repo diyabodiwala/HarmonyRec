@@ -1,0 +1,26 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+
+def load_data(interactions_file, songs_file):
+    interactions = pd.read_csv(interactions_file)
+    songs = pd.read_csv(songs_file)
+    return interactions, songs
+
+def preprocess_data(interactions, songs):
+    user_encoder = LabelEncoder()
+    item_encoder = LabelEncoder()
+
+    interactions['user'] = user_encoder.fit_transform(interactions['user_id'])
+    interactions['item'] = item_encoder.fit_transform(interactions['song_id'])
+
+    return interactions, user_encoder, item_encoder
+
+def split_data(interactions):
+    train, test = train_test_split(interactions, test_size=0.2, random_state=42)
+    return train, test
+
+def save_encoders(user_encoder, item_encoder, user_encoder_file, item_encoder_file):
+    import joblib
+    joblib.dump(user_encoder, user_encoder_file)
+    joblib.dump(item_encoder, item_encoder_file)
